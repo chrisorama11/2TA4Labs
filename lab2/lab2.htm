@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\lab2.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\lab2.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6190004: Last Updated: Wed Feb  8 15:44:32 2023
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6190004: Last Updated: Sun Feb 12 15:19:03 2023
 <BR><P>
 <H3>Maximum Stack Usage =        196 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -565,7 +565,7 @@ Global Symbols
 <P><STRONG><a name="[e2]"></a>BSP_LCD_DisplayChar</STRONG> (Thumb, 290 bytes, Stack size 80 bytes, stm32f429i_discovery_lcd.o(.text.BSP_LCD_DisplayChar))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = BSP_LCD_DisplayChar
 </UL>
-<BR>[Called By]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DisplayString
+<BR>[Called By]<UL><LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DisplayString
 </UL>
 
 <P><STRONG><a name="[f2]"></a>BSP_LCD_DisplayOn</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, stm32f429i_discovery_lcd.o(.text.BSP_LCD_DisplayOn))
@@ -573,13 +573,13 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[e1]"></a>BSP_LCD_GetFont</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, stm32f429i_discovery_lcd.o(.text.BSP_LCD_GetFont))
-<BR><BR>[Called By]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DisplayString
+<BR><BR>[Called By]<UL><LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DisplayString
 </UL>
 
 <P><STRONG><a name="[e3]"></a>BSP_LCD_GetXSize</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, stm32f429i_discovery_lcd.o(.text.BSP_LCD_GetXSize))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = BSP_LCD_GetXSize
 </UL>
-<BR>[Called By]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DisplayString
+<BR>[Called By]<UL><LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DisplayString
 </UL>
 
 <P><STRONG><a name="[82]"></a>BSP_LCD_Init</STRONG> (Thumb, 186 bytes, Stack size 16 bytes, stm32f429i_discovery_lcd.o(.text.BSP_LCD_Init))
@@ -648,7 +648,8 @@ Global Symbols
 <P><STRONG><a name="[8e]"></a>BSP_LED_On</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, stm32f429i_discovery.o(.text.BSP_LED_On))
 <BR><BR>[Calls]<UL><LI><a href="#[8c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM3_Config
+<BR>[Called By]<UL><LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_DelayElapsedCallback
+<LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM3_Config
 <LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -765,17 +766,17 @@ Global Symbols
 <LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASHEx_Erase
 </UL>
 
-<P><STRONG><a name="[bf]"></a>FMC_SDRAM_Init</STRONG> (Thumb, 122 bytes, Stack size 24 bytes, stm32f4xx_ll_fmc.o(.text.FMC_SDRAM_Init))
+<P><STRONG><a name="[bf]"></a>FMC_SDRAM_Init</STRONG> (Thumb, 130 bytes, Stack size 24 bytes, stm32f4xx_ll_fmc.o(.text.FMC_SDRAM_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = FMC_SDRAM_Init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SDRAM_Init
 </UL>
 
-<P><STRONG><a name="[c1]"></a>FMC_SDRAM_ProgramRefreshRate</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, stm32f4xx_ll_fmc.o(.text.FMC_SDRAM_ProgramRefreshRate))
+<P><STRONG><a name="[c1]"></a>FMC_SDRAM_ProgramRefreshRate</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, stm32f4xx_ll_fmc.o(.text.FMC_SDRAM_ProgramRefreshRate))
 <BR><BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SDRAM_ProgramRefreshRate
 </UL>
 
-<P><STRONG><a name="[a5]"></a>FMC_SDRAM_SendCommand</STRONG> (Thumb, 90 bytes, Stack size 24 bytes, stm32f4xx_ll_fmc.o(.text.FMC_SDRAM_SendCommand))
+<P><STRONG><a name="[a5]"></a>FMC_SDRAM_SendCommand</STRONG> (Thumb, 94 bytes, Stack size 24 bytes, stm32f4xx_ll_fmc.o(.text.FMC_SDRAM_SendCommand))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = FMC_SDRAM_SendCommand
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
@@ -783,7 +784,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SDRAM_SendCommand
 </UL>
 
-<P><STRONG><a name="[c0]"></a>FMC_SDRAM_Timing_Init</STRONG> (Thumb, 212 bytes, Stack size 24 bytes, stm32f4xx_ll_fmc.o(.text.FMC_SDRAM_Timing_Init))
+<P><STRONG><a name="[c0]"></a>FMC_SDRAM_Timing_Init</STRONG> (Thumb, 218 bytes, Stack size 24 bytes, stm32f4xx_ll_fmc.o(.text.FMC_SDRAM_Timing_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = FMC_SDRAM_Timing_Init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SDRAM_Init
@@ -886,7 +887,7 @@ Global Symbols
 <LI><a href="#[10]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EXTI0_IRQHandler
 </UL>
 
-<P><STRONG><a name="[8a]"></a>HAL_GPIO_Init</STRONG> (Thumb, 420 bytes, Stack size 44 bytes, stm32f4xx_hal_gpio.o(.text.HAL_GPIO_Init))
+<P><STRONG><a name="[8a]"></a>HAL_GPIO_Init</STRONG> (Thumb, 416 bytes, Stack size 44 bytes, stm32f4xx_hal_gpio.o(.text.HAL_GPIO_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = HAL_GPIO_Init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_SDRAM_MspInit
@@ -980,7 +981,7 @@ Global Symbols
 
 <P><STRONG><a name="[91]"></a>HAL_NVIC_EnableIRQ</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, stm32f4xx_hal_cortex.o(.text.HAL_NVIC_EnableIRQ))
 <BR><BR>[Called By]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_SDRAM_MspInit
-<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_MspInit
+<LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_MspInit
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_Base_MspInit
 <LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_PB_Init
 <LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -990,7 +991,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = HAL_NVIC_SetPriority
 </UL>
 <BR>[Called By]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_SDRAM_MspInit
-<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_MspInit
+<LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_MspInit
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_Base_MspInit
 <LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_PB_Init
 <LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_InitTick
@@ -1048,7 +1049,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 </UL>
-<BR>[Called By]<UL><LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<BR>[Called By]<UL><LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_DelayElapsedCallback
+<LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
 <P><STRONG><a name="[bc]"></a>HAL_RNG_Init</STRONG> (Thumb, 48 bytes, Stack size 8 bytes, stm32f4xx_hal_rng.o(.text.HAL_RNG_Init))
@@ -1079,15 +1081,15 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_SDRAM_Init
 </UL>
 
-<P><STRONG><a name="[97]"></a>HAL_SDRAM_ProgramRefreshRate</STRONG> (Thumb, 48 bytes, Stack size 16 bytes, stm32f4xx_hal_sdram.o(.text.HAL_SDRAM_ProgramRefreshRate))
-<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = HAL_SDRAM_ProgramRefreshRate
+<P><STRONG><a name="[97]"></a>HAL_SDRAM_ProgramRefreshRate</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, stm32f4xx_hal_sdram.o(.text.HAL_SDRAM_ProgramRefreshRate))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = HAL_SDRAM_ProgramRefreshRate
 </UL>
 <BR>[Calls]<UL><LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FMC_SDRAM_ProgramRefreshRate
 </UL>
 <BR>[Called By]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_SDRAM_Initialization_sequence
 </UL>
 
-<P><STRONG><a name="[95]"></a>HAL_SDRAM_SendCommand</STRONG> (Thumb, 60 bytes, Stack size 16 bytes, stm32f4xx_hal_sdram.o(.text.HAL_SDRAM_SendCommand))
+<P><STRONG><a name="[95]"></a>HAL_SDRAM_SendCommand</STRONG> (Thumb, 50 bytes, Stack size 16 bytes, stm32f4xx_hal_sdram.o(.text.HAL_SDRAM_SendCommand))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = HAL_SDRAM_SendCommand &rArr; FMC_SDRAM_SendCommand
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FMC_SDRAM_SendCommand
@@ -1193,7 +1195,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[cf]"></a>HAL_TIM_IRQHandler</STRONG> (Thumb, 362 bytes, Stack size 8 bytes, stm32f4xx_hal_tim.o(.text.HAL_TIM_IRQHandler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 144<LI>Call Chain = HAL_TIM_IRQHandler &rArr; HAL_TIM_PeriodElapsedCallback &rArr; LCD_DisplayString &rArr; BSP_LCD_DisplayChar
+<BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = HAL_TIM_IRQHandler &rArr; HAL_TIM_OC_DelayElapsedCallback &rArr; LCD_DisplayString &rArr; BSP_LCD_DisplayChar
 </UL>
 <BR>[Calls]<UL><LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_DelayElapsedCallback
 <LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_PeriodElapsedCallback
@@ -1218,26 +1220,33 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM4_OC_Config
 </UL>
 
-<P><STRONG><a name="[d5]"></a>HAL_TIM_OC_DelayElapsedCallback</STRONG> (Thumb, 46 bytes, Stack size 0 bytes, main.o(.text.HAL_TIM_OC_DelayElapsedCallback))
-<BR><BR>[Called By]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
+<P><STRONG><a name="[d5]"></a>HAL_TIM_OC_DelayElapsedCallback</STRONG> (Thumb, 166 bytes, Stack size 32 bytes, main.o(.text.HAL_TIM_OC_DelayElapsedCallback))
+<BR><BR>[Stack]<UL><LI>Max Depth = 144<LI>Call Chain = HAL_TIM_OC_DelayElapsedCallback &rArr; LCD_DisplayString &rArr; BSP_LCD_DisplayChar
+</UL>
+<BR>[Calls]<UL><LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RNG_GenerateRandomNumber
+<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DisplayString
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_LED_On
+<LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
+</UL>
+<BR>[Called By]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
 </UL>
 
-<P><STRONG><a name="[dc]"></a>HAL_TIM_OC_Init</STRONG> (Thumb, 88 bytes, Stack size 8 bytes, stm32f4xx_hal_tim.o(.text.HAL_TIM_OC_Init))
+<P><STRONG><a name="[de]"></a>HAL_TIM_OC_Init</STRONG> (Thumb, 88 bytes, Stack size 8 bytes, stm32f4xx_hal_tim.o(.text.HAL_TIM_OC_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = HAL_TIM_OC_Init &rArr; HAL_TIM_OC_MspInit &rArr; HAL_NVIC_SetPriority
 </UL>
-<BR>[Calls]<UL><LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_MspInit
+<BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_MspInit
 <LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM_Base_SetConfig
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM4_OC_Config
 </UL>
 
-<P><STRONG><a name="[dd]"></a>HAL_TIM_OC_MspInit</STRONG> (Thumb, 56 bytes, Stack size 16 bytes, stm32f4xx_hal_msp.o(.text.HAL_TIM_OC_MspInit))
+<P><STRONG><a name="[df]"></a>HAL_TIM_OC_MspInit</STRONG> (Thumb, 56 bytes, Stack size 16 bytes, stm32f4xx_hal_msp.o(.text.HAL_TIM_OC_MspInit))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = HAL_TIM_OC_MspInit &rArr; HAL_NVIC_SetPriority
 </UL>
 <BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_NVIC_EnableIRQ
 <LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_NVIC_SetPriority
 </UL>
-<BR>[Called By]<UL><LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_Init
+<BR>[Called By]<UL><LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_Init
 </UL>
 
 <P><STRONG><a name="[ef]"></a>HAL_TIM_OC_Start_IT</STRONG> (Thumb, 292 bytes, Stack size 0 bytes, stm32f4xx_hal_tim.o(.text.HAL_TIM_OC_Start_IT))
@@ -1252,8 +1261,8 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = HAL_TIM_PeriodElapsedCallback &rArr; LCD_DisplayString &rArr; BSP_LCD_DisplayChar
 </UL>
 <BR>[Calls]<UL><LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_LED_Off
-<LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DisplayString
-<LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
+<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DisplayString
+<LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
 </UL>
@@ -1277,14 +1286,15 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ili9341_Init
 </UL>
 
-<P><STRONG><a name="[df]"></a>LCD_DisplayString</STRONG> (Thumb, 104 bytes, Stack size 32 bytes, main.o(.text.LCD_DisplayString))
+<P><STRONG><a name="[dd]"></a>LCD_DisplayString</STRONG> (Thumb, 104 bytes, Stack size 32 bytes, main.o(.text.LCD_DisplayString))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = LCD_DisplayString &rArr; BSP_LCD_DisplayChar
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_LCD_GetXSize
 <LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_LCD_DisplayChar
 <LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_LCD_GetFont
 </UL>
-<BR>[Called By]<UL><LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_PeriodElapsedCallback
+<BR>[Called By]<UL><LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_DelayElapsedCallback
+<LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_PeriodElapsedCallback
 <LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -1366,14 +1376,14 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[27]"></a>TIM3_IRQHandler</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, stm32f4xx_it.o(.text.TIM3_IRQHandler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 144<LI>Call Chain = TIM3_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_PeriodElapsedCallback &rArr; LCD_DisplayString &rArr; BSP_LCD_DisplayChar
+<BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = TIM3_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_OC_DelayElapsedCallback &rArr; LCD_DisplayString &rArr; BSP_LCD_DisplayChar
 </UL>
 <BR>[Calls]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f429xx.o(RESET)
 </UL>
 <P><STRONG><a name="[28]"></a>TIM4_IRQHandler</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, stm32f4xx_it.o(.text.TIM4_IRQHandler))
-<BR><BR>[Stack]<UL><LI>Max Depth = 144<LI>Call Chain = TIM4_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_PeriodElapsedCallback &rArr; LCD_DisplayString &rArr; BSP_LCD_DisplayChar
+<BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = TIM4_IRQHandler &rArr; HAL_TIM_IRQHandler &rArr; HAL_TIM_OC_DelayElapsedCallback &rArr; LCD_DisplayString &rArr; BSP_LCD_DisplayChar
 </UL>
 <BR>[Calls]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
 </UL>
@@ -1384,7 +1394,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_Start_IT
 <LI><a href="#[d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_ConfigChannel
-<LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_Init
+<LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_Init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -1392,7 +1402,7 @@ Global Symbols
 <P><STRONG><a name="[ce]"></a>TIM_Base_SetConfig</STRONG> (Thumb, 284 bytes, Stack size 8 bytes, stm32f4xx_hal_tim.o(.text.TIM_Base_SetConfig))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = TIM_Base_SetConfig
 </UL>
-<BR>[Called By]<UL><LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_Init
+<BR>[Called By]<UL><LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_Init
 <LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_Base_Init
 </UL>
 
@@ -1456,7 +1466,7 @@ Global Symbols
 <LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_FLASH_Unlock
 <LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RNG_GenerateRandomNumber
 <LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RNG_Init
-<LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DisplayString
+<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LCD_DisplayString
 <LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_LCD_SetBackColor
 <LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_LCD_SetTextColor
 <LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_LCD_SetFont
@@ -1479,7 +1489,7 @@ Global Symbols
 <LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_LED_On
 <LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_OscConfig
 <LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Init
-<LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
+<LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> entry9a.o(.ARM.Collect$$$$0000000B)
 </UL>
@@ -1490,10 +1500,11 @@ Global Symbols
 
 <P><STRONG><a name="[10d]"></a>__1sprintf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printfa.o(i.__0sprintf), UNUSED)
 
-<P><STRONG><a name="[de]"></a>__2sprintf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printfa.o(i.__0sprintf))
+<P><STRONG><a name="[dc]"></a>__2sprintf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printfa.o(i.__0sprintf))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = __2sprintf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_PeriodElapsedCallback
+<BR>[Called By]<UL><LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_OC_DelayElapsedCallback
+<LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_PeriodElapsedCallback
 <LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
