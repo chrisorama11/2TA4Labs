@@ -50,9 +50,6 @@ This starter project:
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "stdio.h"
-#include "stdlib.h"
-#include "math.h"
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -197,10 +194,10 @@ int main(void)
 	BSP_LCD_SetBackColor(LCD_COLOR_LIGHTGRAY);
 	
 		
-	LCD_DisplayString(1, 5, (uint8_t *)"Code by Chris and Saransh");
-	LCD_DisplayString(5, 2, (uint8_t *)"MT3TA4 Lab2 ");
+/*	LCD_DisplayString(1, 5, (uint8_t *)"abcdefghijklmnopQRSTUVWXYZ");
+	LCD_DisplayString(5, 2, (uint8_t *)"MT2TA4 Lab2 ");
 	LCD_DisplayInt(7, 6, 123456789);
-	LCD_DisplayFloat(8, 6, 12.3456789, 4);
+	LCD_DisplayFloat(8, 6, 12.3456789, 4);*/
 
 
  //**************test random number *********************
@@ -219,9 +216,9 @@ int main(void)
 												
 	if (Hal_status==HAL_ERROR || Hal_status==HAL_TIMEOUT) // a new rng was NOT generated sucessfully;
 		 random=1000; // millisecond	
-	LCD_DisplayString(9, 0, (uint8_t *)"random:");
+	/*LCD_DisplayString(9, 0, (uint8_t *)"random:");
 	LCD_DisplayString(9, 8, (uint8_t *)"         ");
-	LCD_DisplayInt(9, 8, random);
+	LCD_DisplayInt(9, 8, random);*/
 
 	
 	
@@ -230,29 +227,30 @@ int main(void)
 
 //Unlock the Flash Program Erase controller 
 	HAL_FLASH_Unlock();
-	LCD_DisplayInt(10, 1, 1);	  //!!!!!the 1, 2, 3, 4 printed here is for debuging.....to check 		
+	//LCD_DisplayInt(10, 1, 1);	  //!!!!!the 1, 2, 3, 4 printed here is for debuging.....to check 		
 	
 // EEPROM Init 
 	EE_Init();
-	LCD_DisplayInt(10, 4, 2);
+	//LCD_DisplayInt(10, 4, 2);
  	
 	//test EEPROM----
 	EE_WriteVariable(VirtAddVarTab[0], 300);
-	LCD_DisplayInt(10, 7, 3);
+	//LCD_DisplayInt(10, 7, 3);
 	
 	EE_ReadVariable(VirtAddVarTab[0], &EEREAD);	
-	LCD_DisplayInt(10, 10, 4);
+	//LCD_DisplayInt(10, 10, 4);
 
-	LCD_DisplayString(11,0,(uint8_t *)"EE READ:");
+	/*LCD_DisplayString(11,0,(uint8_t *)"EE READ:");
 	LCD_DisplayString(11,9,(uint8_t *)"     ");	
-	LCD_DisplayInt(11, 9, EEREAD);		
+	LCD_DisplayInt(11, 9, EEREAD);*/		
 
  
   /* Infinite loop */
   while (1)
 	{	
 		//do nothing 
-		// if (UBPressed==1) 
+		 if (UBPressed==1) 
+			BSP_LED_On(LED4); 
 		
 		
   }
@@ -529,68 +527,40 @@ static void EXTILine1_Config(void)  //for STM32f429_DISCO board, can not use PA1
   HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 }
 
-
-//the TIM3 controls both LEDs
-
-enum STATE {START, WAIT, GAME, RESTART}; 
-enum STATE s = 0;
+enum State {START, WAIT, GAME, SCORE};
+enum  State s; 
+int time = 0; 
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)   //see  stm32fxx_hal_tim.c for different callback function names. 
 																															//for timer 3 , Timer 3 use update event initerrupt
 {
-		if ((*htim).Instance==TIM3){    //since only one timer, this line is actually not needed
-		
-		if (s == 0){ // default state, toggling both LEDs
-			BSP_LED_Toggle(LED3);
-			BSP_LED_Toggle(LED4);
-			if (UBPressed == 1) {
-				BSP_LED_Off(LED3); // turn on LEDs
-				BSP_LED_Off(LED4);
-				s = s+1;
-			}
-		}
-	}
+		if ((*htim).Instance==TIM3)    //since only one timer use this interrupt, this line is actually not needed
+				if (s == 0) {
+					BSP_LED_Toggle(LED3);
+					BSP_LED_Toggle(LED4);
+				}	
 }
 
 
-RNG_HandleTypeDef Rng_Handle;
-uint32_t random;
-uint32_t time;
-
 void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef * htim) //see  stm32fxx_hal_tim.c for different callback function names. 
-{			//for timer4 
-	
-		HAL_RNG_GenerateRandomNumber(&Rng_Handle, &random);			
-		random = 1500 + random%1000;		
-
-		int game_state = 0;
-
-		if ((*htim).Instance==TIM4 && OC_Count < random) {   //be careful, every 1/1000 second there is a interrupt with the current configuration for TIM4
-			 //BSP_LED_Toggle(LED4); 
-			OC_Count=OC_Count+1;
-		}
-		if (s == 1) {
-			UBPressed = 0;
-			game_state = 5;
-			if (OC_Count==random) {
-					BSP_LED_On(LED4); 
-					BSP_LED_On(LED3);
-					s = 2;
-			LCD_DisplayInt(15, 5, random);
+{																																//for timer4 
+		if ((*htim).Instance==TIM4 && s == 1) {   //be careful, every 1/1000 second there is a interrupt with the current configuration for TIM4
+			if (random > 0) {
+				random--;
 			}
-			LCD_DisplayInt(1, 5, s);
-			LCD_DisplayInt(12, 5, UBPressed);
-		}		
+			else {
+				s++;
+			}
 		
-		if ((*htim).Instance==TIM4) {
-			if (s == 2) {
-				time = time + 1;
-				if (UBPressed == 1) {
-					LCD_DisplayInt(13, 5, time);
-					s = s + 1;
-				}
-			}
+		}	else if (s == 2) {
+			
+			BSP_LED_On(LED3);
+			BSP_LED_On(LED4);
+			time++;
+			
 		}
+		
+		
       
 		//clear the timer counter!  in stm32f4xx_hal_tim.c, the counter is not cleared after  OC interrupt
 		__HAL_TIM_SET_COUNTER(htim, 0x0000);   //this maro is defined in stm32f4xx_hal_tim.h
@@ -603,12 +573,43 @@ void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef * htim) //see  stm32fxx_h
   * @param GPIO_Pin: Specifies the pins connected EXTI line
   * @retval None
   */
+
+
+
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
+	if (s==0) {
+			HAL_RNG_GenerateRandomNumber(&Rng_Handle, &random);
+			random = random % 1000 + 1500;
+	}
 	
   if(GPIO_Pin == KEY_BUTTON_PIN)  //GPIO_PIN_0
   {
-    				UBPressed=1;
+		
+		if (s == 0) {
+			s++;
+		}
+    //UBPressed=1;
+		switch (s) {
+			case 1: 
+				BSP_LED_Off(LED3);
+				BSP_LED_Off(LED4);
+				LCD_DisplayString(1, 5, (uint8_t *)"S is one");
+				break;
+			
+			case 2: 
+				LCD_DisplayString(1, 5, (uint8_t *)"time is");
+				LCD_DisplayInt(2, 5, time); 
+				//where we check if the random time has elapsed, then s++
+			
+			
+			
+		}
+			
+		
+		
+		
 	}
 	
 	
