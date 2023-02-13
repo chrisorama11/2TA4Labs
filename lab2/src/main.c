@@ -561,24 +561,36 @@ void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef * htim) //see  stm32fxx_h
 {			//for timer4 
 	
 		HAL_RNG_GenerateRandomNumber(&Rng_Handle, &random);			
-		random = random%1000 + 1500;		
-	
+		random = 1500 + random%1000;		
+
 		int game_state = 0;
 
-		//random = rand() % 1500 + 500;		
 		if ((*htim).Instance==TIM4 && OC_Count < random) {   //be careful, every 1/1000 second there is a interrupt with the current configuration for TIM4
 			 //BSP_LED_Toggle(LED4); 
 			OC_Count=OC_Count+1;
 		}
 		if (s == 1) {
+			UBPressed = 0;
 			game_state = 5;
 			if (OC_Count==random) {
 					BSP_LED_On(LED4); 
 					BSP_LED_On(LED3);
 					s = 2;
+			LCD_DisplayInt(15, 5, random);
 			}
 			LCD_DisplayInt(1, 5, s);
+			LCD_DisplayInt(12, 5, UBPressed);
 		}		
+		
+		if ((*htim).Instance==TIM4) {
+			if (s == 2) {
+				time = time + 1;
+				if (UBPressed == 1) {
+					LCD_DisplayInt(13, 5, time);
+					s = s + 1;
+				}
+			}
+		}
       
 		//clear the timer counter!  in stm32f4xx_hal_tim.c, the counter is not cleared after  OC interrupt
 		__HAL_TIM_SET_COUNTER(htim, 0x0000);   //this maro is defined in stm32f4xx_hal_tim.h
