@@ -193,6 +193,8 @@ int main(void)
 	BSP_LCD_SetTextColor(LCD_COLOR_RED);
 	BSP_LCD_SetBackColor(LCD_COLOR_LIGHTGRAY);
 	
+	
+	
 		
 /*	LCD_DisplayString(1, 5, (uint8_t *)"abcdefghijklmnopQRSTUVWXYZ");
 	LCD_DisplayString(5, 2, (uint8_t *)"MT2TA4 Lab2 ");
@@ -531,15 +533,20 @@ enum State {START, WAIT, GAME, SCORE};
 enum  State s; 
 int time = 0; 
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)   //see  stm32fxx_hal_tim.c for different callback function names. 
+	
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {   //see  stm32fxx_hal_tim.c for different callback function names. 
 																															//for timer 3 , Timer 3 use update event initerrupt
-{
+
+
 		if ((*htim).Instance==TIM3)    //since only one timer use this interrupt, this line is actually not needed
 				if (s == 0) {
 					BSP_LED_Toggle(LED3);
 					BSP_LED_Toggle(LED4);
 				}	
 }
+
+
 
 
 void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef * htim) //see  stm32fxx_hal_tim.c for different callback function names. 
@@ -553,10 +560,10 @@ void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef * htim) //see  stm32fxx_h
 			}
 		
 		}	else if (s == 2) {
-			
 			BSP_LED_On(LED3);
 			BSP_LED_On(LED4);
 			time++;
+			
 			
 		}
 		
@@ -576,12 +583,15 @@ void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef * htim) //see  stm32fxx_h
 
 
 
+int cheat = 0;
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
+
 	if (s==0) {
 			HAL_RNG_GenerateRandomNumber(&Rng_Handle, &random);
 			random = random % 1000 + 1500;
+			time = 0;
 	}
 	
   if(GPIO_Pin == KEY_BUTTON_PIN)  //GPIO_PIN_0
@@ -590,18 +600,44 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		if (s == 0) {
 			s++;
 		}
+		
+		if (cheat && s == 1) {
+		LCD_DisplayString(11, 1, (uint8_t *)"Cheater!");
+		cheat = 0; 
+		s = 0;
+		}
+		
+		else if (s == 2) {
+			s++;
+			BSP_LCD_ClearStringLine(14);
+			
+		}
+		
+		
+		
     //UBPressed=1;
 		switch (s) {
 			case 1: 
 				BSP_LED_Off(LED3);
 				BSP_LED_Off(LED4);
-				LCD_DisplayString(1, 5, (uint8_t *)"S is one");
+				LCD_DisplayString(14,1,(uint8_t *)"Wait...");
+				cheat = 1;
 				break;
 			
-			case 2: 
-				LCD_DisplayString(1, 5, (uint8_t *)"time is");
-				LCD_DisplayInt(2, 5, time); 
-				//where we check if the random time has elapsed, then s++
+			
+			case 3: 
+				LCD_DisplayString(2,1, (uint8_t *)"congrats! you didn't cheat!");
+				LCD_DisplayString(4, 1, (uint8_t *)"current time is:");
+				LCD_DisplayInt(6, 5, time);
+				EE_ReadVariable(VirtAddVarTab[0], &EEREAD);	
+				if (time < EEREAD){
+					EEREAD = time;
+					EE_WriteVariable(VirtAddVarTab[0], time);
+				}
+				LCD_DisplayString(8, 1, (uint8_t *)"best is:");
+				LCD_DisplayInt(10, 5, EEREAD);
+				cheat = 0;
+				break;
 			
 			
 			
@@ -616,6 +652,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	if(GPIO_Pin == GPIO_PIN_1)
   {
 			extern_UBPressed=1;
+			BSP_LCD_Clear(LCD_COLOR_CYAN);
+			s = 0; 
+		
+			
+		
 	}
  
 }
