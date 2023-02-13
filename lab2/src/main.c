@@ -190,11 +190,11 @@ int main(void)
 	BSP_LCD_DisplayOn();
  
 	BSP_LCD_SetFont(&Font20);  //the default font,  LCD_DEFAULT_FONT, which is defined in _lcd.h, is Font24
-	BSP_LCD_SetTextColor(LCD_COLOR_RED);
+	BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
 	BSP_LCD_SetBackColor(LCD_COLOR_LIGHTGRAY);
 	
 	
-	
+LCD_DisplayString(1, 1, (uint8_t *)"Reaction Timer");
 		
 /*	LCD_DisplayString(1, 5, (uint8_t *)"abcdefghijklmnopQRSTUVWXYZ");
 	LCD_DisplayString(5, 2, (uint8_t *)"MT2TA4 Lab2 ");
@@ -236,8 +236,7 @@ int main(void)
 	//LCD_DisplayInt(10, 4, 2);
  	
 	//test EEPROM----
-	EE_WriteVariable(VirtAddVarTab[0], 300);
-	//LCD_DisplayInt(10, 7, 3);
+ 	//LCD_DisplayInt(10, 7, 3);
 	
 	EE_ReadVariable(VirtAddVarTab[0], &EEREAD);	
 	//LCD_DisplayInt(10, 10, 4);
@@ -529,9 +528,9 @@ static void EXTILine1_Config(void)  //for STM32f429_DISCO board, can not use PA1
   HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 }
 
-enum State {START, WAIT, GAME, SCORE};
-enum  State s; 
-int time = 0; 
+enum State {START, WAIT, GAME, SCORE};//this enum helps us to keep track of states. It either changes with the push of button or after a random time
+enum  State s; //our specific state
+int time = 0; //here we initialize the time var to zero. we iterate it up when tim4 has an interrupt, when we are in s == 2
 
 	
 
@@ -540,8 +539,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {   //see  stm32fxx_
 
 
 		if ((*htim).Instance==TIM3)    //since only one timer use this interrupt, this line is actually not needed
-				if (s == 0) {
-					BSP_LED_Toggle(LED3);
+				if (s == 0) { //flashes the LEDs at the same frequency
+					BSP_LED_Toggle(LED3); 
 					BSP_LED_Toggle(LED4);
 				}	
 }
@@ -552,8 +551,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {   //see  stm32fxx_
 void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef * htim) //see  stm32fxx_hal_tim.c for different callback function names. 
 {																																//for timer4 
 		if ((*htim).Instance==TIM4 && s == 1) {   //be careful, every 1/1000 second there is a interrupt with the current configuration for TIM4
-			if (random > 0) {
-				random--;
+			if (random > 0) {//we set the random time to range between 1.5 and 2.5 seconds exactly
+				random--;//this will subtract 1 from the random variable every time this interrupt occurs
 			}
 			else {
 				s++;
@@ -583,13 +582,13 @@ void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef * htim) //see  stm32fxx_h
 
 
 
-int cheat = 0;
+int cheat = 0;//this is a flag that, when combined with a button press in an inappropriate state, will result in the user being labeled a cheat
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 
 	if (s==0) {
-			HAL_RNG_GenerateRandomNumber(&Rng_Handle, &random);
+			HAL_RNG_GenerateRandomNumber(&Rng_Handle, &random);//this means when the button is pressed in state == 0, random is generated and time is reset
 			random = random % 1000 + 1500;
 			time = 0;
 	}
@@ -597,17 +596,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   if(GPIO_Pin == KEY_BUTTON_PIN)  //GPIO_PIN_0
   {
 		
-		if (s == 0) {
+		if (s == 0 && cheat == 0) {//this results in us moving states only when the cheat flag is down and button is pressed
 			s++;
 		}
 		
-		if (cheat && s == 1) {
+		if (cheat && s == 1) { //if the cheat flag is up and user presses button during wait state, it will result in cheater being displayed
+		BSP_LCD_SetTextColor(LCD_COLOR_RED);
 		LCD_DisplayString(11, 1, (uint8_t *)"Cheater!");
-		cheat = 0; 
+		//cheat = 0; 
 		s = 0;
 		}
 		
-		else if (s == 2) {
+		else if (s == 2) {//if the above conditions did not kick in, the user will move from s = 2 to 3 on a button press
 			s++;
 			BSP_LCD_ClearStringLine(14);
 			
@@ -616,23 +616,25 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		
 		
     //UBPressed=1;
-		switch (s) {
+		switch (s) {//this switch case details various behaviour following an onboard button press
 			case 1: 
 				BSP_LED_Off(LED3);
 				BSP_LED_Off(LED4);
 				LCD_DisplayString(14,1,(uint8_t *)"Wait...");
-				cheat = 1;
+				cheat = 1;//setting cheat high
 				break;
 			
 			
 			case 3: 
-				LCD_DisplayString(2,1, (uint8_t *)"congrats! you didn't cheat!");
-				LCD_DisplayString(4, 1, (uint8_t *)"current time is:");
+				BSP_LCD_ClearStringLine(1);
+				LCD_DisplayString(2,0, (uint8_t *)"congrats!");
+				LCD_DisplayString(4, 0, (uint8_t *)"current time is:");
 				LCD_DisplayInt(6, 5, time);
 				EE_ReadVariable(VirtAddVarTab[0], &EEREAD);	
-				if (time < EEREAD){
+				if (time < EEREAD){//will set new time to EEPROM if better than the entry
 					EEREAD = time;
 					EE_WriteVariable(VirtAddVarTab[0], time);
+					BSP_LCD_SetTextColor(LCD_COLOR_DARKGREEN);
 				}
 				LCD_DisplayString(8, 1, (uint8_t *)"best is:");
 				LCD_DisplayInt(10, 5, EEREAD);
@@ -651,8 +653,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	
 	if(GPIO_Pin == GPIO_PIN_1)
   {
-			extern_UBPressed=1;
+			extern_UBPressed=1;//on reset button press, reset everthing
 			BSP_LCD_Clear(LCD_COLOR_CYAN);
+			BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+			LCD_DisplayString(1, 1, (uint8_t *)"Welcome back!");
+			cheat = 0;
 			s = 0; 
 		
 			

@@ -26,53 +26,14 @@ Project File Date:  02/13/2023
 
 <h2>Output:</h2>
 *** Using Compiler 'V6.19', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
-Rebuild target 'lab2'
-compiling stm32f429i_discovery_sdram.c...
-compiling stm32f4xx_hal_cortex.c...
-compiling Hal_eeprom.c...
-compiling LED_F429Discovery.c...
-compiling Buttons_F429Discovery.c...
-compiling ili9341.c...
-compiling stm32f429i_discovery.c...
-compiling stmpe811.c...
-compiling stm32f4xx_it.c...
-compiling stm32f4xx_hal.c...
-compiling stm32f429i_discovery_io.c...
-compiling stm32f4xx_hal_msp.c...
-compiling stm32f4xx_hal_exti.c...
-compiling stm32f4xx_hal_dma_ex.c...
-compiling stm32f4xx_hal_flash.c...
-compiling stm32f4xx_hal_flash_ex.c...
-compiling stm32f4xx_hal_dma.c...
-src/main.c(619): warning: enumeration values 'START' and 'GAME' not handled in switch [-Wswitch]
-                switch (s) {
+Build target 'lab2'
+src/main.c(620): warning: enumeration values 'START' and 'GAME' not handled in switch [-Wswitch]
+                switch (s) {//this switch case details various behaviour following an onboard button press
                         ^
 1 warning generated.
 compiling main.c...
-compiling stm32f4xx_hal_dma2d.c...
-compiling stm32f4xx_hal_gpio.c...
-compiling stm32f4xx_hal_i2c_ex.c...
-compiling stm32f4xx_hal_pwr.c...
-compiling stm32f4xx_hal_pwr_ex.c...
-compiling stm32f429i_discovery_lcd.c...
-compiling stm32f4xx_hal_i2s_ex.c...
-compiling stm32f4xx_hal_i2s.c...
-compiling stm32f4xx_hal_ltdc.c...
-compiling stm32f4xx_hal_rcc.c...
-compiling stm32f4xx_hal_rng.c...
-compiling stm32f4xx_hal_rcc_ex.c...
-assembling startup_stm32f429xx.s...
-compiling stm32f4xx_hal_sdram.c...
-compiling stm32f4xx_hal_sram.c...
-compiling system_stm32f4xx.c...
-compiling stm32f4xx_ll_fmc.c...
-compiling stm32f4xx_hal_tim_ex.c...
-compiling stm32f4xx_hal_spi.c...
-compiling stm32f4xx_hal_uart.c...
-compiling stm32f4xx_hal_i2c.c...
-compiling stm32f4xx_hal_tim.c...
 linking...
-Program Size: Code=20732 RO-data=11196 RW-data=108 ZI-data=1916  
+Program Size: Code=20812 RO-data=11196 RW-data=108 ZI-data=1916  
 ".\lab2.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
@@ -151,53 +112,53 @@ Package Vendor: Keil
       Source file:   MDK/Boards/ST/STM32F429I-Discovery/Common/Buttons_F429Discovery.c
 
    * Component: Keil.STM32F429I-Discovery::Board Support:Components:ILI9341:1.0.2
-      Source file:   Drivers/BSP/Components/ili9341/ili9341.c
       Include file:  Drivers/BSP/Components/ili9341/ili9341.h
+      Source file:   Drivers/BSP/Components/ili9341/ili9341.c
 
    * Component: Keil.STM32F429I-Discovery::Board Support:Components:STMPE811:2.0.0
       Include file:  Drivers/BSP/Components/stmpe811/stmpe811.h
       Source file:   Drivers/BSP/Components/stmpe811/stmpe811.c
 
    * Component: Keil.STM32F429I-Discovery::Board Support:Drivers:Basic I/O:1.0.0
-      Source file:   Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery.c
       Include file:  Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery.h
+      Source file:   Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery.c
 
    * Component: Keil.STM32F429I-Discovery::Board Support:Drivers:I/O:1.0.0
       Include file:  Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery_io.h
       Source file:   Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery_io.c
 
    * Component: Keil.STM32F429I-Discovery::Board Support:Drivers:LCD:1.0.0
-      Source file:   Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery_lcd.c
       Include file:  Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery_lcd.h
+      Source file:   Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery_lcd.c
 
    * Component: Keil.STM32F429I-Discovery::Board Support:Drivers:SDRAM:1.0.0
-      Source file:   Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery_sdram.c
       Include file:  Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery_sdram.h
+      Source file:   Drivers/BSP/STM32F429I-Discovery/stm32f429i_discovery_sdram.c
 
    * Component: Keil.STM32F429I-Discovery::Board Support:LED:1.0.0
       Source file:   MDK/Boards/ST/STM32F429I-Discovery/Common/LED_F429Discovery.c
 
    * Component: Keil::Device:STM32Cube Framework:Classic:1.8.1
       Include file:  CMSIS/Driver/Config/RTE_Device.h
-      Include file:  MDK/Templates/Inc/stm32f4xx_hal_conf.h
-      Include file:  MDK/Templates/Inc/stm32f4xx_it.h
-      Source file:   MDK/Templates/Src/stm32f4xx_it.c
-      Source file:   MDK/Templates/Src/stm32f4xx_hal_msp.c
       Source file:   MDK/Templates/Src/main.c
+      Source file:   MDK/Templates/Src/stm32f4xx_hal_msp.c
+      Include file:  MDK/Templates/Inc/stm32f4xx_it.h
       Include file:  MDK/Templates_LL/Inc/main.h
-      Include file:  MDK/Templates/Inc/main.h
       Source file:   MDK/Templates_LL/Src/main.c
+      Include file:  MDK/Templates/Inc/stm32f4xx_hal_conf.h
+      Source file:   MDK/Templates/Src/stm32f4xx_it.c
+      Include file:  MDK/Templates/Inc/main.h
 
    * Component: Keil::Device:STM32Cube HAL:Common:1.8.1
-      Include file:  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
       Source file:   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c
+      Include file:  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 
    * Component: Keil::Device:STM32Cube HAL:Cortex:1.8.1
       Source file:   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c
 
    * Component: Keil::Device:STM32Cube HAL:DMA:1.8.1
-      Source file:   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c
       Source file:   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c
+      Source file:   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c
 
    * Component: Keil::Device:STM32Cube HAL:DMA2D:1.8.1
       Source file:   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.c
@@ -213,8 +174,8 @@ Package Vendor: Keil
       Source file:   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c
 
    * Component: Keil::Device:STM32Cube HAL:I2C:1.8.1
-      Source file:   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c
       Source file:   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c
+      Source file:   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c
 
    * Component: Keil::Device:STM32Cube HAL:I2S:1.8.1
       Source file:   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c
@@ -242,8 +203,8 @@ Package Vendor: Keil
       Source file:   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c
 
    * Component: Keil::Device:STM32Cube HAL:SRAM:1.8.1
-      Source file:   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c
       Source file:   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.c
+      Source file:   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_fmc.c
 
    * Component: Keil::Device:STM32Cube HAL:TIM:1.8.1
       Source file:   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c
@@ -253,12 +214,12 @@ Package Vendor: Keil
       Source file:   Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c
 
    * Component: Keil::Device:Startup:2.6.3
-      Source file:   MDK/Device/Source/ARM/STM32F42xxx_43xxx_OPT.s
       Include file:  Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
-      Source file:   MDK/Device/Source/ARM/STM32F4xx_OTP.s
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f429xx.s
+      Source file:   MDK/Device/Source/ARM/STM32F4xx_OTP.s
+      Source file:   MDK/Device/Source/ARM/STM32F42xxx_43xxx_OPT.s
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
-Build Time Elapsed:  00:00:02
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>
