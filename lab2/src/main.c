@@ -538,26 +538,20 @@ enum STATE s = 0;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)   //see  stm32fxx_hal_tim.c for different callback function names. 
 																															//for timer 3 , Timer 3 use update event initerrupt
 {
-		if ((*htim).Instance==TIM3)    //since only one timer use this interrupt, this line is actually not needed
-			//if button=0 tie to low
-				if (UBPressed == 1) {
-					//BSP_LED_Off(LED3);
-					//BSP_LED_Off(LED4);
-					s = s + 1;
-				}
-			//BSP_LED_Toggle(LED3);
-			if (s == 1) {
-				BSP_LED_Off(LED4); 
-				BSP_LED_Off(LED3);
-				LCD_DisplayInt(1, 5, s); }
-	
+		if ((*htim).Instance==TIM3){    //since only one timer, this line is actually not needed
+		
+		if (s == 0){ // default state, toggling both LEDs
+			BSP_LED_Toggle(LED3);
+			BSP_LED_Toggle(LED4);
+			if (UBPressed == 1) {
+				BSP_LED_Off(LED3); // turn on LEDs
+				BSP_LED_Off(LED4);
+				s = s+1;
+			}
+		}
+	}
 }
 
-float float_rand( float min, float max, int places )
-{
-    float scale = rand() / (float) RAND_MAX; /* [0, 1.0] */
-    return min + scale * ( max - min );      /* [min, max] */
-}
 
 RNG_HandleTypeDef Rng_Handle;
 uint32_t random;
@@ -571,19 +565,19 @@ void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef * htim) //see  stm32fxx_h
 	
 		int game_state = 0;
 
-		if (s == 1) {
-			game_state = 5;
-		}
-		//random = rand() % 1500 + 500; 
+		//random = rand() % 1500 + 500;		
 		if ((*htim).Instance==TIM4 && OC_Count < random) {   //be careful, every 1/1000 second there is a interrupt with the current configuration for TIM4
 			 //BSP_LED_Toggle(LED4); 
 			OC_Count=OC_Count+1;
+		}
+		if (s == 1) {
+			game_state = 5;
 			if (OC_Count==random) {
 					BSP_LED_On(LED4); 
 					BSP_LED_On(LED3);
 					s = 2;
-				LCD_DisplayInt(1, 5, s);
-					}	
+			}
+			LCD_DisplayInt(1, 5, s);
 		}		
       
 		//clear the timer counter!  in stm32f4xx_hal_tim.c, the counter is not cleared after  OC interrupt
