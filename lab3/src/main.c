@@ -218,6 +218,10 @@ int main(void)
 		
 	RTC_AlarmAConfig();
 	
+	ExtBtn1_Config();
+	ExtBtn2_Config();
+	
+	
 	
  //test realtime clock	
     
@@ -333,7 +337,7 @@ void ExtBtn1_Config(void)     // for GPIO C pin 1
   /* Configure PA0 pin as input floating */
   GPIO_InitStructure.Mode =  GPIO_MODE_IT_FALLING;
   GPIO_InitStructure.Pull =GPIO_PULLUP;
-  GPIO_InitStructure.Pin = GPIO_PIN_1;
+  GPIO_InitStructure.Pin = GPIO_PIN_1;//cause this uses pin c1
 	//GPIO_InitStructure.Speed=GPIO_SPEED_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
 
@@ -351,14 +355,14 @@ void ExtBtn2_Config(void){  //**********PD2.***********
   GPIO_InitTypeDef   GPIO_InitStructure;
 
   /* Enable GPIOB clock */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();//mught need to change to gpiod
   
   /* Configure PA0 pin as input floating */
   GPIO_InitStructure.Mode =  GPIO_MODE_IT_FALLING;
   GPIO_InitStructure.Pull =GPIO_PULLUP;
   GPIO_InitStructure.Pin = GPIO_PIN_2;
 	//GPIO_InitStructure.Speed=GPIO_SPEED_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStructure);//might need to change ti GPIOD
 
 	//__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);   //is defined the same as the __HAL_GPIO_EXTI_CLEAR_FLAG(GPIO_PIN_1); ---check the hal_gpio.h
 	__HAL_GPIO_EXTI_CLEAR_FLAG(GPIO_PIN_2);// after moving the chunk of code in the GPIO_EXTI callback from _it.c (before these chunks are in _it.c)
@@ -372,6 +376,19 @@ void ExtBtn2_Config(void){  //**********PD2.***********
   HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 }
 
+int EEdisplay = 0; //will trigger viewing of the times stored in EEPROM (button 1)
+int timechange = 0;//will allow user to change times (button one for changing value, button two to enter
+//this state and to change the value to be changed
+int incrementHours = 0;
+int incrementMinutes = 0;
+int incrementSeconds = 0;
+int incrementWeekday = 0;
+int incrementDate = 0;
+int incrementWeek = 0;
+int incrementMonth = 0;
+int incrementYear = 0;
+int hours = 0;
+int timechangex = 0;
 
 void RTC_Config(void) {
 	RTC_TimeTypeDef RTC_TimeStructure;
@@ -429,25 +446,68 @@ void RTC_Config(void) {
 				}
 	
 	//3. init the time and date
-				RTC_DateStructure.Year = 15;
-				RTC_DateStructure.Month = RTC_MONTH_DECEMBER;
-				RTC_DateStructure.Date = 18; //if use RTC_FORMAT_BCD, NEED TO SET IT AS 0x18 for the 18th.
-				RTC_DateStructure.WeekDay = RTC_WEEKDAY_FRIDAY; //???  if the real weekday is not correct for the given date, still set as 
-																												//what is specified here.
+				
 				
 				if(HAL_RTC_SetDate(&RTCHandle,&RTC_DateStructure,RTC_FORMAT_BIN) != HAL_OK)   //BIN format is better 
 															//before, must set in BCD format and read in BIN format!!
 				{
 					LCD_DisplayString(2, 0, (uint8_t *)"Date Init Error!");
 				} 
+				if (timechangex ==0) {
+					RTC_DateStructure.Year = 15;
+					RTC_DateStructure.Month = RTC_MONTH_DECEMBER;
+					RTC_DateStructure.Date = 18; //if use RTC_FORMAT_BCD, NEED TO SET IT AS 0x18 for the 18th.
+					RTC_DateStructure.WeekDay = RTC_WEEKDAY_FRIDAY; //???  if the real weekday is not correct for the given date, still set as 
+																													//what is specified here.
+		
+					RTC_TimeStructure.Hours = 9;  
+					RTC_TimeStructure.Minutes = 0x19; //if use RTC_FORMAT_BCD, NEED TO SET IT AS 0x19
+					RTC_TimeStructure.Seconds = 1;
+					RTC_TimeStructure.TimeFormat = RTC_HOURFORMAT12_AM;
+					RTC_TimeStructure.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+					RTC_TimeStructure.StoreOperation = RTC_STOREOPERATION_RESET;//?????/
+					HAL_RTC_SetDate(&RTCHandle, &RTC_DateStructure, RTC_FORMAT_BIN);
+					HAL_RTC_SetTime(&RTCHandle, &RTC_TimeStructure, RTC_FORMAT_BIN);
+				if(HAL_RTC_SetTime(&RTCHandle,&RTC_TimeStructure,RTC_FORMAT_BIN) != HAL_OK)   //BIN format is better
+																																					//before, must set in BCD format and read in BIN format!!
+				{
+					LCD_DisplayString(3, 0, (uint8_t *)"TIME Init Error!");
+				}
   
-  
-				RTC_TimeStructure.Hours = 9;  
-				RTC_TimeStructure.Minutes = 0x19; //if use RTC_FORMAT_BCD, NEED TO SET IT AS 0x19
-				RTC_TimeStructure.Seconds = 29;
-				RTC_TimeStructure.TimeFormat = RTC_HOURFORMAT12_AM;
-				RTC_TimeStructure.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-				RTC_TimeStructure.StoreOperation = RTC_STOREOPERATION_RESET;//?????/
+			//Writes a data in a RTC Backup data Register0   --why need this line?
+			//HAL_RTCEx_BKUPWrite(&RTCHandle,RTC_BKP_DR0,0x32F2);   
+
+	/*
+			//The RTC Resynchronization mode is write protected, use the
+			//__HAL_RTC_WRITEPROTECTION_DISABLE() befor calling this function.
+			__HAL_RTC_WRITEPROTECTION_DISABLE(&RTCHandle);
+			//wait for RTC APB registers synchronisation
+			HAL_RTC_WaitForSynchro(&RTCHandle);
+			__HAL_RTC_WRITEPROTECTION_ENABLE(&RTCHandle);				
+	 */
+				
+				
+			__HAL_RTC_TAMPER1_DISABLE(&RTCHandle);
+			__HAL_RTC_TAMPER2_DISABLE(&RTCHandle);	
+				//Optionally, a tamper event can cause a timestamp to be recorded. ---P802 of RM0090
+				//Timestamp on tamper event
+				//With TAMPTS set to ‘1 , any tamper event causes a timestamp to occur. In this case, either
+				//the TSF bit or the TSOVF bit are set in RTC_ISR, in the same manner as if a normal
+				//timestamp event occurs. The affected tamper flag register (TAMP1F, TAMP2F) is set at the
+				//same time that TSF or TSOVF is set. ---P802, about Tamper detection
+				//-------that is why need to disable this two tamper interrupts. Before disable these two, when program start, there is always a timestamp interrupt.
+				//----also, these two disable function can not be put in the TSConfig().---put there will make  the program freezed when start. the possible reason is
+				//-----one the RTC is configured, changing the control register again need to lock and unlock RTC and disable write protection.---See Alarm disable/Enable 
+				//---function.
+				
+			HAL_RTC_WaitForSynchro(&RTCHandle);	
+			//To read the calendar through the shadow registers after Calendar initialization,
+			//		calendar update or after wake-up from low power modes the software must first clear
+			//the RSF flag. The software must then wait until it is set again before reading the
+			//calendar, which means that the calendar registers have been correctly copied into the
+			//RTC_TR and RTC_DR shadow registers.The HAL_RTC_WaitForSynchro() function
+			//implements the above software sequence (RSF clear and RSF check).	
+				} 
 				
 				if(HAL_RTC_SetTime(&RTCHandle,&RTC_TimeStructure,RTC_FORMAT_BIN) != HAL_OK)   //BIN format is better
 																																					//before, must set in BCD format and read in BIN format!!
@@ -488,7 +548,8 @@ void RTC_Config(void) {
 			//calendar, which means that the calendar registers have been correctly copied into the
 			//RTC_TR and RTC_DR shadow registers.The HAL_RTC_WaitForSynchro() function
 			//implements the above software sequence (RSF clear and RSF check).	
-}
+				}
+
 
 
 void RTC_AlarmAConfig(void)
@@ -638,27 +699,299 @@ void LCD_DisplayFloat(uint16_t LineNumber, uint16_t ColumnNumber, float Number, 
   */
 
 
+
+int click = 0; 
+
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	
+	HAL_RTC_GetTime(&RTCHandle, &read_RTC_TimeStruct, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&RTCHandle, &read_RTC_DateStruct, RTC_FORMAT_BIN); 
   if(GPIO_Pin == KEY_BUTTON_PIN)  //GPIO_PIN_0
-  {
-		I2C_ByteWrite(&I2c3_Handle,EEPROM_ADDRESS, memLocation ,read_RTC_TimeStruct.Hours);
+  { 
+		if (click == 0) {
+			I2C_ByteWrite(&I2c3_Handle,EEPROM_ADDRESS, memLocation ,read_RTC_TimeStruct.Hours);
+			I2C_ByteWrite(&I2c3_Handle,EEPROM_ADDRESS, memLocation+1 ,read_RTC_TimeStruct.Minutes);		
+			I2C_ByteWrite(&I2c3_Handle,EEPROM_ADDRESS, memLocation+2 ,read_RTC_TimeStruct.Seconds);	
+			click++;
+		}
+		if (click == 1) {
+			I2C_ByteWrite(&I2c3_Handle,EEPROM_ADDRESS, memLocation+3 ,read_RTC_TimeStruct.Hours);
+			I2C_ByteWrite(&I2c3_Handle,EEPROM_ADDRESS, memLocation+4 ,read_RTC_TimeStruct.Minutes);		
+			I2C_ByteWrite(&I2c3_Handle,EEPROM_ADDRESS, memLocation+5 ,read_RTC_TimeStruct.Seconds);
+			click = 0; 
+		}
+			
 
+		
   }
 	
 	
-	if(GPIO_Pin == GPIO_PIN_1)
+	if(GPIO_Pin == GPIO_PIN_1 )
   {
-		BSP_LCD_Clear(LCD_COLOR_CYAN);
+		
+		if (timechange == 0) {//ensuring we can only display eeprom values when NOT changing time
+		
+			if (EEdisplay == 0) {
+					EEdisplay = 1;
+			}
+			else {
+				EEdisplay = 0;
+			}
+				
+				
+			if (EEdisplay == 1 && click == 0) {//prints the time saved upon button click
+				LCD_DisplayString(8, 1, (uint8_t *) "1st time");
+				int readHours=I2C_ByteRead(&I2c3_Handle,EEPROM_ADDRESS, memLocation);
+				LCD_DisplayInt(9,1, readHours);
+				int readMinutes=I2C_ByteRead(&I2c3_Handle,EEPROM_ADDRESS, memLocation+1);
+				LCD_DisplayInt(9,4, readMinutes);
+				int readSeconds=I2C_ByteRead(&I2c3_Handle,EEPROM_ADDRESS, memLocation+2);
+				LCD_DisplayInt(9,7, readSeconds);
+				//EEdisplay = 0;
+			}
+			else if (EEdisplay == 1 && click == 1) {//does not work, but would save the first two values of time
+				LCD_DisplayString(8, 1, (uint8_t *) "1st time");
+				int readHours=I2C_ByteRead(&I2c3_Handle,EEPROM_ADDRESS, memLocation);
+				LCD_DisplayInt(9,1, readHours);
+				int readMinutes=I2C_ByteRead(&I2c3_Handle,EEPROM_ADDRESS, memLocation+1);
+				LCD_DisplayInt(9,4, readMinutes);
+				int readSeconds=I2C_ByteRead(&I2c3_Handle,EEPROM_ADDRESS, memLocation+2);
+				LCD_DisplayInt(9,7, readSeconds);
+				LCD_DisplayString(10, 1, (uint8_t *) "2nd time");
+				int readHours2=I2C_ByteRead(&I2c3_Handle,EEPROM_ADDRESS, memLocation+3);
+				LCD_DisplayInt(11,1, readHours2);
+				int readMinutes2=I2C_ByteRead(&I2c3_Handle,EEPROM_ADDRESS, memLocation+4);
+				LCD_DisplayInt(11,4, readMinutes2);
+				int readSeconds2=I2C_ByteRead(&I2c3_Handle,EEPROM_ADDRESS, memLocation+5);
+				LCD_DisplayInt(11,7, readSeconds2);
+			}
+			else{
+				BSP_LCD_ClearStringLine(8);
+				BSP_LCD_ClearStringLine(9);
+				//EEdisplay = 1
+			}
 			
+		}
+		
+		else if (timechange == 1){
+			incrementHours++;
+			//RTC_TimeStructure.Hours++;
+			//LCD_DisplayInt(2, 1, read_RTC_TimeStruct.Hours);
+			RTC_TimeStructure.Hours= incrementHours;
+
+			LCD_DisplayInt(2, 1, incrementHours);
+			HAL_RTC_SetDate(&RTCHandle, &RTC_DateStructure, RTC_FORMAT_BIN);
+			HAL_RTC_SetTime(&RTCHandle, &RTC_TimeStructure, RTC_FORMAT_BIN);
+
+			//timechange = 0; 
+		}
+		else if (timechange == 2) {
+			incrementMinutes++;
+			RTC_TimeStructure.Minutes = incrementMinutes;
+
+			LCD_DisplayInt(2,1, incrementMinutes);
+			HAL_RTC_SetDate(&RTCHandle, &RTC_DateStructure, RTC_FORMAT_BIN);
+			HAL_RTC_SetTime(&RTCHandle, &RTC_TimeStructure, RTC_FORMAT_BIN);
+		
+		}
+		else if (timechange == 3) {
+			incrementSeconds++;
+			RTC_TimeStructure.Seconds = incrementSeconds;
+
+			LCD_DisplayInt(2,1, incrementSeconds);
+					HAL_RTC_SetDate(&RTCHandle, &RTC_DateStructure, RTC_FORMAT_BIN);
+			HAL_RTC_SetTime(&RTCHandle, &RTC_TimeStructure, RTC_FORMAT_BIN);
+		}
+		else if (timechange == 4) {
+			incrementWeekday++;
+			RTC_DateStructure.WeekDay = incrementWeekday;
+			LCD_DisplayInt(2,1, incrementWeekday);
+						HAL_RTC_SetDate(&RTCHandle, &RTC_DateStructure, RTC_FORMAT_BIN);
+			HAL_RTC_SetTime(&RTCHandle, &RTC_TimeStructure, RTC_FORMAT_BIN);
+		
+		}
+		else if (timechange == 5) {
+			incrementDate++;
+			RTC_DateStructure.Date = incrementDate;
+			LCD_DisplayInt(2,1, incrementDate);
+						HAL_RTC_SetDate(&RTCHandle, &RTC_DateStructure, RTC_FORMAT_BIN);
+			HAL_RTC_SetTime(&RTCHandle, &RTC_TimeStructure, RTC_FORMAT_BIN);
+		
+		}
+		else if (timechange == 6) {
+			incrementMonth++;
+			RTC_DateStructure.Month = incrementMonth;
+			LCD_DisplayInt(2,1, incrementMonth);
+						HAL_RTC_SetDate(&RTCHandle, &RTC_DateStructure, RTC_FORMAT_BIN);
+			HAL_RTC_SetTime(&RTCHandle, &RTC_TimeStructure, RTC_FORMAT_BIN);
+			
+		
+		}
+		else if (timechange == 7) {
+			incrementYear++;
+			RTC_DateStructure.Year = incrementYear;
+
+			LCD_DisplayInt(2,1, incrementYear);
+						HAL_RTC_SetDate(&RTCHandle, &RTC_DateStructure, RTC_FORMAT_BIN);
+			HAL_RTC_SetTime(&RTCHandle, &RTC_TimeStructure, RTC_FORMAT_BIN);
+		
+		}
+		
+		
+			
+		
+	
 
 	}  //end of PIN_1
 
 	if(GPIO_Pin == GPIO_PIN_2)
   {
-
-		LCD_DisplayString(11, 1, (uint8_t *) "Button 2");
+timechangex=0;
+		
+		if (EEdisplay == 0) {//ensures we are not showing eeprom vals
+		
+			if (timechange == 0) {
+					timechangex = 1;//editing hours
+				LCD_DisplayString(1,1, (uint8_t *) "set hour:");
+				LCD_DisplayString(6,0, (uint8_t *) "WD:DD:MM:YY");
+	
+				LCD_DisplayInt(7,0, read_RTC_DateStruct.WeekDay);
+				LCD_DisplayInt(7,3, read_RTC_DateStruct.Date);
+				LCD_DisplayInt(7,6, read_RTC_DateStruct.Month);
+				LCD_DisplayInt(7,9, read_RTC_DateStruct.Year);
+			}
+			if (timechange == 1) {
+			
+					timechangex = 2; //editing minutes
+				BSP_LCD_ClearStringLine(1);
+				BSP_LCD_ClearStringLine(2);
+				BSP_LCD_ClearStringLine(6);
+				BSP_LCD_ClearStringLine(7);
+				LCD_DisplayString(1,1, (uint8_t *) "set minute:");
+				LCD_DisplayString(6,0, (uint8_t *) "WD:DD:MM:YY");
+	
+				LCD_DisplayInt(7,0, read_RTC_DateStruct.WeekDay);
+				LCD_DisplayInt(7,3, read_RTC_DateStruct.Date);
+				LCD_DisplayInt(7,6, read_RTC_DateStruct.Month);
+				LCD_DisplayInt(7,9, read_RTC_DateStruct.Year);
+			
+			}
+			if (timechange == 2) {
+			
+					timechangex = 3; //editing seconds
+				BSP_LCD_ClearStringLine(1);
+				BSP_LCD_ClearStringLine(2);
+				BSP_LCD_ClearStringLine(6);
+				BSP_LCD_ClearStringLine(7);
+				LCD_DisplayString(1,1, (uint8_t *) "set seconds:");
+				LCD_DisplayString(6,0, (uint8_t *) "WD:DD:MM:YY");
+	
+				LCD_DisplayInt(7,0, read_RTC_DateStruct.WeekDay);
+				LCD_DisplayInt(7,3, read_RTC_DateStruct.Date);
+				LCD_DisplayInt(7,6, read_RTC_DateStruct.Month);
+				LCD_DisplayInt(7,9, read_RTC_DateStruct.Year);
+			
+			}
+			if (timechange == 3) {//editing weekday
+			
+					timechangex = 4; 
+				BSP_LCD_ClearStringLine(1);
+				BSP_LCD_ClearStringLine(2);
+				BSP_LCD_ClearStringLine(6);
+				BSP_LCD_ClearStringLine(7);
+				LCD_DisplayString(1,1, (uint8_t *) "set weekday:");
+				LCD_DisplayString(6,0, (uint8_t *) "WD:DD:MM:YY");
+	
+				LCD_DisplayInt(7,0, read_RTC_DateStruct.WeekDay);
+				LCD_DisplayInt(7,3, read_RTC_DateStruct.Date);
+				LCD_DisplayInt(7,6, read_RTC_DateStruct.Month);
+				LCD_DisplayInt(7,9, read_RTC_DateStruct.Year);
+			
+			}
+			if (timechange == 4) {
+			
+					timechangex = 5; //editing date
+				BSP_LCD_ClearStringLine(1);
+				BSP_LCD_ClearStringLine(2);
+				BSP_LCD_ClearStringLine(6);
+				BSP_LCD_ClearStringLine(7);
+				LCD_DisplayString(1,1, (uint8_t *) "set date:");
+				LCD_DisplayString(6,0, (uint8_t *) "WD:DD:MM:YY");
+	
+				LCD_DisplayInt(7,0, read_RTC_DateStruct.WeekDay);
+				LCD_DisplayInt(7,3, read_RTC_DateStruct.Date);
+				LCD_DisplayInt(7,6, read_RTC_DateStruct.Month);
+				LCD_DisplayInt(7,9, read_RTC_DateStruct.Year);
+			
+			}
+			if (timechange == 5) {//editing month
+			
+					timechangex = 6; 
+				BSP_LCD_ClearStringLine(1);
+				BSP_LCD_ClearStringLine(2);
+				BSP_LCD_ClearStringLine(6);
+				BSP_LCD_ClearStringLine(7);
+				LCD_DisplayString(1,1, (uint8_t *) "set month:");
+				LCD_DisplayString(6,0, (uint8_t *) "WD:DD:MM:YY");
+	
+				LCD_DisplayInt(7,0, read_RTC_DateStruct.WeekDay);
+				LCD_DisplayInt(7,3, read_RTC_DateStruct.Date);
+				LCD_DisplayInt(7,6, read_RTC_DateStruct.Month);
+				LCD_DisplayInt(7,9, read_RTC_DateStruct.Year);
+			
+			}
+			if (timechange == 6) {//editing year
+			
+					timechangex = 7; 
+				BSP_LCD_ClearStringLine(1);
+				BSP_LCD_ClearStringLine(2);
+				BSP_LCD_ClearStringLine(6);
+				BSP_LCD_ClearStringLine(7);
+				LCD_DisplayString(1,1, (uint8_t *) "set year:");
+				LCD_DisplayString(6,0, (uint8_t *) "WD:DD:MM:YY");
+	
+				LCD_DisplayInt(7,0, read_RTC_DateStruct.WeekDay);
+				LCD_DisplayInt(7,3, read_RTC_DateStruct.Date);
+				LCD_DisplayInt(7,6, read_RTC_DateStruct.Month);
+				LCD_DisplayInt(7,9, read_RTC_DateStruct.Year);
+			
+			}
+			if (timechange == 7) {//going back to display time
+				timechangex=8;
+				BSP_LCD_ClearStringLine(1);
+				BSP_LCD_ClearStringLine(2);
+				BSP_LCD_ClearStringLine(6);
+				BSP_LCD_ClearStringLine(7);
+				timechange=0;
+			}
+		}
+			
+			if (timechangex==1) {//this might seem convoluted, but it ensures we only exit time changing at the proper time
+				timechange = 1;//this makes sure that we do not "cascade" from each type of time change. 
+			}
+			if (timechangex==2) {
+				timechange = 2;
+			}
+			if (timechangex==3) {
+				timechange = 3;
+			}
+			if (timechangex==3) {
+				timechange = 3;
+			}
+			if (timechangex==4) {
+				timechange = 4;
+			}
+			if (timechangex==5) {
+				timechange = 5;
+			}
+			if (timechangex==6) {
+				timechange = 6;
+			}
+			if (timechangex==7) {
+				timechange = 7;
+			}
+			
 	} //end of if PIN_2	
 	
 	
@@ -671,54 +1004,44 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
 {
  
-	//BSP_LCD_Clear(LCD_COLOR_WHITE);
-		//HAL_Delay(10);   
-		//otherwise, the following line will have trouble to display. 1. while cannot delay too long.??? 
-		//LCD_DisplayString(1, 0, (uint8_t *)"Testing RTC...");
-	
-	
-		/*RTC_DateStructure.Month=1;
-		RTC_DateStructure.WeekDay=2;   //what will happen if the date/weekday is not correct?
-		RTC_DateStructure.Date=3;
-		RTC_DateStructure.Year=44; //2012???  how about 1912?
-		
-		//HAL_RTC_SetDate(&RTCHandle, &RTC_DateStructure, RTC_FORMAT_BIN);
-	
-	
-		RTC_TimeStructure.Hours= 11;
-		RTC_TimeStructure.Minutes=2;   
-		RTC_TimeStructure.Seconds=1;
-		
-		//HAL_RTC_SetTime(&RTCHandle, &RTC_TimeStructure, RTC_FORMAT_BIN);
 	
 		
 		//Read from RTC*/
-		HAL_RTC_GetTime(&RTCHandle, &read_RTC_TimeStruct, RTC_FORMAT_BIN);
-		HAL_RTC_GetDate(&RTCHandle, &read_RTC_DateStruct, RTC_FORMAT_BIN); 
+		if (timechange == 0 || timechangex==8) {//this way, we only show time upon initialization and after time set
+			
+		
+		
+			HAL_RTC_GetTime(&RTCHandle, &read_RTC_TimeStruct, RTC_FORMAT_BIN);
+			HAL_RTC_GetDate(&RTCHandle, &read_RTC_DateStruct, RTC_FORMAT_BIN); 
 		//NOTE from the UM1725 : You must call HAL_RTC_GetDate() after HAL_RTC_GetTime() to unlock the values in the higher order 
 		//calendar shadow register ....		
 	
-		LCD_DisplayString(3,0, (uint8_t *) "HH:MM:SS");
+			LCD_DisplayString(3,0, (uint8_t *) "HH:MM:SS");
 	
-		LCD_DisplayInt(4,0,read_RTC_TimeStruct.Hours);
-		LCD_DisplayInt(4,3,read_RTC_TimeStruct.Minutes);
-		LCD_DisplayInt(4,6,read_RTC_TimeStruct.Seconds);
+			LCD_DisplayInt(4,0,read_RTC_TimeStruct.Hours);
+			LCD_DisplayInt(4,3,read_RTC_TimeStruct.Minutes);
+			LCD_DisplayInt(4,6,read_RTC_TimeStruct.Seconds);
 		
 		
-		LCD_DisplayString(6,0, (uint8_t *) "WD:DD:MM:YY");
+			LCD_DisplayString(6,0, (uint8_t *) "WD:DD:MM:YY");
 	
-		LCD_DisplayInt(7,0, read_RTC_DateStruct.WeekDay);
-		LCD_DisplayInt(7,3, read_RTC_DateStruct.Date);
-		LCD_DisplayInt(7,6, read_RTC_DateStruct.Month);
-		LCD_DisplayInt(7,9, read_RTC_DateStruct.Year);
+			LCD_DisplayInt(7,0, read_RTC_DateStruct.WeekDay);
+			LCD_DisplayInt(7,3, read_RTC_DateStruct.Date);
+			LCD_DisplayInt(7,6, read_RTC_DateStruct.Month);
+			LCD_DisplayInt(7,9, read_RTC_DateStruct.Year);
 
 		
 		
-		if ((GPIOA->IDR & 0x1) != 0x1) {
-			BSP_LCD_ClearStringLine(6);
-			BSP_LCD_ClearStringLine(7);
-		}
+			if ((GPIOA->IDR & 0x1) != 0x1) {//this ensures inly displays year and date when button held
+				BSP_LCD_ClearStringLine(6);
+				BSP_LCD_ClearStringLine(7);
+			}
+		
 	}
+		
+}
+		
+		
 
 
 
