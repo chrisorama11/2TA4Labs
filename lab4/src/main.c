@@ -34,7 +34,12 @@
 
 __IO uint16_t ADC3ConvertedValue=0;
 
-__IO uint16_t TIM3_CCR1_Val=0;
+__IO uint16_t uhADCxConvertedValue = 0;
+
+__IO uint16_t TIM3_CCR1_Val=260;
+__IO uint16_t Tim4_CCR; 
+
+uint16_t Tim4PrescalerValue;
 
  volatile double  setPoint=23.5;  //NOTE: if declare as float, when +0.5, the compiler will give warning:
 															//"single_precision perand implicitly converted to double-precision"
@@ -77,8 +82,12 @@ double measuredTemp;
 void  LEDs_Config(void);
 
 
-TIM_HandleTypeDef    Tim3_Handle;
+TIM_HandleTypeDef    Tim3_Handle, Tim4Handle;
 TIM_OC_InitTypeDef Tim3_OCInitStructure;
+
+/* ADC handler declaration */
+ADC_HandleTypeDef    AdcHandle;
+ADC_ChannelConfTypeDef sConfig;
 
 uint16_t TIM3Prescaler=1799;   //with the prescaler as 180, every 500 ticks of TIM3 is 1ms. if 1800, then every 50 ticks is 1ms
 uint16_t TIM3Period=1000;    //1,000 ticks of TIM3, with 1800 prescaller, is 20ms
@@ -92,6 +101,9 @@ void TIM3_PWM_Config(void);
 static void SystemClock_Config(void);
 static void Error_Handler(void);
 
+void TIM4_Config(void);
+
+
 int main(void){
 	
 		/* STM32F4xx HAL library initialization:
@@ -101,7 +113,8 @@ int main(void){
        - Global MSP (MCU Support Package) initialization
      */
 		HAL_Init();
-		
+		TIM4_Config();
+		Tim4_CCR=65535/1;       //  will be changed
 	
 	
 		SystemClock_Config();
@@ -136,21 +149,67 @@ int main(void){
 		LCD_DisplayString(10, 0, (uint8_t *)"setPoint");
 	
 	
-		LCD_DisplayFloat(9, 10, 23.55, 2);
+		
 		LCD_DisplayFloat(10, 10, 23.55, 2);
-	
+		HAL_ADC_PollForConversion(&AdcHandle,1000);
 	
 			//configure PWM output
 		TIM3_PWM_Config();
 		
+		
+		/*##-1- Configure the ADC peripheral #######################################*/
+  AdcHandle.Instance          = ADC3;
+  
+  AdcHandle.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+  AdcHandle.Init.Resolution = ADC_RESOLUTION_12B;
+  AdcHandle.Init.ScanConvMode = DISABLE;
+  AdcHandle.Init.ContinuousConvMode = ENABLE;
+  AdcHandle.Init.DiscontinuousConvMode = DISABLE;
+  AdcHandle.Init.NbrOfDiscConversion = 0;
+  AdcHandle.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  AdcHandle.Init.ExternalTrigConv = ADC_EXTERNALTRIGCONV_T1_CC1;
+  AdcHandle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  AdcHandle.Init.NbrOfConversion = 1;
+  AdcHandle.Init.DMAContinuousRequests = ENABLE;
+  AdcHandle.Init.EOCSelection = DISABLE;
+      
+  if(HAL_ADC_Init(&AdcHandle) != HAL_OK)
+  {
+    /* Initialization Error */
+    Error_Handler(); 
+  }
+  
+  /*##-2- Configure ADC regular channel ######################################*/  
+  sConfig.Channel = ADC_CHANNEL_13;
+  sConfig.Rank = 1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_480CYCLES;
+  sConfig.Offset = 0;
+  
+  if(HAL_ADC_ConfigChannel(&AdcHandle, &sConfig) != HAL_OK)
+  {
+    /* Channel Configuration Error */
+    Error_Handler(); 
+  }
+
+  /*##-3- Start the conversion process and enable interrupt ##################*/
+  /* Note: Considering IT occurring after each number of ADC conversions      */
+  /*       (IT by DMA end of transfer), select sampling time and ADC clock    */
+  /*       with sufficient duration to not create an overhead situation in    */
+  /*        IRQHandler. */ 
+  //if(HAL_ADC_Start_DMA(&AdcHandle, (uint32_t*)&uhADCxConvertedValue, 1) != HAL_OK)
+  if(HAL_ADC_Start(&AdcHandle) != HAL_OK)
+	{
+    /* Start Conversation Error */
+    Error_Handler(); 
+  }
+  
+  /* Infinite loop */
 	while(1) {		
 			
-
-
-
-
-
-		
+		 // Start ADC Conversion
+        // Pass (The ADC Instance, Result Buffer Address, Buffer Length)
+		//HAL_ADC_Start(&AdcHandle, &uhADCxConvertedValue, 1);
+    HAL_Delay(10);		
 	} // end of while loop
 	
 }  //end of main
@@ -234,6 +293,20 @@ if(HAL_TIM_PWM_Start(&Tim3_Handle, TIM_CHANNEL_1) != HAL_OK)
   }  
 	
 
+}
+
+void TIM4_Config(void)
+{
+	//Calculate the prescaler value to have the TIM4 counter overflow 50 KHz
+	
+	Tim4Handle.Init.Period = 65535; //This won't matter since we'll be using the output compare in Timer 4
+	Tim4PrescalerValue = (uint32_t) (SystemCoreClock / (100 * (Tim4Handle.Init.Period + 1)))-1; //Lower prescaler makes the PWM smoother
+	
+	Tim4Handle.Instance = TIM4;
+	Tim4Handle.Init.Prescaler = Tim4PrescalerValue;
+	Tim4Handle.Init.ClockDivision = 0;
+	Tim4Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
+	
 }
 
 
@@ -363,16 +436,12 @@ void LCD_DisplayFloat(uint16_t LineNumber, uint16_t ColumnNumber, float Number, 
 }
 
 
-
-
-
-
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	
   if(GPIO_Pin == KEY_BUTTON_PIN)  //GPIO_PIN_0
   {
-			
+		LCD_DisplayFloat(9, 10, uhADCxConvertedValue, 2);	
   }
 	
 	
@@ -393,12 +462,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef * htim) //see  stm32fxx_hal_tim.c for different callback function names. 
 {																																//for timer4 
-	//	if ((*htim).Instance==TIM4) {
+	if ((*htim).Instance==TIM4) {
 			
 	//	}	
 		//clear the timer counter!  in stm32f4xx_hal_tim.c, the counter is not cleared after  OC interrupt
-		__HAL_TIM_SET_COUNTER(htim, 0x0000);   //this maro is defined in stm32f4xx_hal_tim.h
+		//__HAL_TIM_SET_COUNTER(htim, 0x0000);   //this maro is defined in stm32f4xx_hal_tim.h
+		ADC3ConvertedValue = HAL_ADC_GetValue(&AdcHandle) * 0.0244;
+		BSP_LCD_ClearStringLine(9);
+		HAL_Delay(10);
+		LCD_DisplayString(9, 0, (uint8_t*) "Current Temp (deg): ");
+		LCD_DisplayFloat(9,10, ADC3ConvertedValue, 2);
 	
+	}
 }
  
 

@@ -68,7 +68,7 @@
   */
 
 
-void HAL_TIM_Base_MspInit (TIM_HandleTypeDef *htim)
+void HAL_TIM_OC_MspInit (TIM_HandleTypeDef *htim)
 {
   //Enable peripherals and GPIO Clocks 
  
@@ -84,7 +84,7 @@ __HAL_RCC_TIM3_CLK_ENABLE(); //this is defined in stm32f4xx_hal_rcc.h
 
 
 
-void HAL_TIM_OC_MspInit(TIM_HandleTypeDef *htim)
+void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
 { 
   //Enable peripherals and GPIO Clocks
  __HAL_RCC_TIM4_CLK_ENABLE();
@@ -142,41 +142,19 @@ void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
 void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
 {
   GPIO_InitTypeDef          GPIO_InitStruct;
-  static DMA_HandleTypeDef  hdma_adc;
   
-	//as for which GPIO pin has to be used for ADC, refer to datasheet for stm32f427xx/stm32f429xx, (table10 on P51 in DocID024030 Rev 7)
-	//		Major pins for ADC: PA1--ADC123_IN1, PA2--ADC123_IN2, PA3---ADC123_IN3,            PA4--ADC12_IN4, PA5--ADC12_IN5,....PA7--ADC12_IN7.
-	//		PC0--ADC123_IN10, ....PC3--ADC123_IN13, 
-	
-	
-	 /*##-1- Enable peripherals and GPIO Clocks #################################*/
+	/*##-1- Enable peripherals and GPIO Clocks #################################*/
   /* Enable GPIO clock */
-  
-///__HAL_RCC_GPIOC_CLK_ENABLE();   // for ADC3_IN13, the pin is PC3
-
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   /* ADC3 Periph clock enable */
- 
-//  /__HAL_RCC_ADC3_CLK_ENABLE();
+  __HAL_RCC_ADC3_CLK_ENABLE();
   
-	
-	/* Enable DMA2 clock */
-  
-//	__HAL_RCC_DMA2_CLK_ENABLE();
-  
-	
-	
-// more settings, Please follow the example project for ACD_DMA.	
-	
-	
-
-	
-  
-	
-
-
-
-
-
+  /*##-2- Configure peripheral GPIO ##########################################*/ 
+  /* ADC3 Channel8 GPIO pin configuration */
+  GPIO_InitStruct.Pin = GPIO_PIN_3;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC/*ADCx_CHANNEL_GPIO_PORT*/, &GPIO_InitStruct);
 }
   
 /**
@@ -192,19 +170,10 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef *hadc)
   static DMA_HandleTypeDef  hdma_adc;
   
   /*##-1- Reset peripherals ##################################################*/
-   __HAL_RCC_ADC_FORCE_RESET();
-  __HAL_RCC_ADC_RELEASE_RESET();
+  ADCx_FORCE_RESET();
+  ADCx_RELEASE_RESET();
 
-  // more settings, please follow the example project
-
-
-
-
-
-
-
-
-
+ 
 }
 
 
